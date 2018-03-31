@@ -3,37 +3,67 @@
 <body>
 
 <?php
+error_reporting(E_ALL); ini_set('display_errors', '1');
 echo "<table style='border: solid 1px black;'>";
- echo "<tr><th>Id</th><th>Firstname</th><th>Lastname</th></tr>";
+ echo "<tr><th>Id</th><th>Firstname</th><th>Lastname</th><th>Password</th></tr>";
 
-class TableRows extends RecursiveIteratorIterator { 
-    function __construct($it) { 
-        parent::__construct($it, self::LEAVES_ONLY); 
+// Start new class
+
+class user { 
+    function __construct() { 
+		$this->display();
+		$this->insert();
+		$this->erase();
+		$this->update();
     }
 
-    function current() {
-        return "<td style='width: 150px; border: 1px solid black;'>" . parent::current(). "</td>";
+    function display() {
+		// connect to database
+		$servername = "sql2.njit.edu";
+		$username = "jcm44";
+		$password = "lq40ntX5";
+		$dbname = "jcm44";
+
+		$conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+		echo "Connected Successfully! <br>";
+		$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		// End connect to database
+        $stmt = $conn->prepare("SELECT id, fname, lname, password FROM accounts"); 
+		$stmt->execute();
+
+		// set the resulting array to associative
+		//$result = $stmt->setFetchMode(PDO::FETCH_ASSOC);
+		$stmt->fetch(PDO::FETCH_ASSOC);
+		foreach ($result = $stmt->fetch()) {
+		echo $result['id'];
+		echo $result['fname'];
+		echo $result['lname'];
+		echo $result['password'];
+		}
     }
 
-    function beginChildren() { 
-        echo "<tr>"; 
+    function insert() { 
+	/*
+        $sql = "INSERT INTO accounts (fname, lname, email, phone, password)
+		VALUES ('John', 'Dean', 'jdean@gmail.com', 'Nacho')";
+		// use exec() because no results are returned
+		$conn->exec($sql);
+		echo "New record created successfully";
+		$this->display();
+		*/
     } 
 
-    function endChildren() { 
-        echo "</tr>" . "\n";
+    function erase() { 
+        
+    }
+	
+	function update() { 
+        
     } 
-} 
+}
 
-$servername = "sql2.njit.edu";
-$username = "jcm44";
-$password = "lq40ntX5";
-$dbname = "jcm44";
-$counter = 0;
 
-try {
-    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-	echo "Connected Successfully! <br>";
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+/*
     $stmt = $conn->prepare("SELECT id, fname, lname FROM accounts WHERE id < 6"); 
     $stmt->execute();
 
@@ -42,19 +72,14 @@ try {
 
     foreach(new TableRows(new RecursiveArrayIterator($stmt->fetchAll())) as $k=>$v) { 
         echo $v;
-		$counter += 1;
     }
-	if ($counter != 0){
-	$counter = $counter/3;
-	echo "<br>Number of records: $counter <br>";		
-	}
+*/
 
-}
-catch(PDOException $e) {
-    echo "Error: " . $e->getMessage();
-}
-$conn = null;
+
 echo "</table>";
+
+$john = new user();
+
 ?> 
 
 </body>
